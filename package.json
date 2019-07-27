@@ -1,0 +1,9 @@
+{
+  "name": "node-mail",
+  "version": "1.0.0",
+  "description": "Node.JS app for sending e-mail messages",
+  "main": "index.js",
+  "repository": "https://github.com/rcdmk/node-mail",
+  "author": "RCDMK <rcdmk@hotmail.com>",
+  "license": "MIT"
+}
