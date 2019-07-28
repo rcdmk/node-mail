@@ -1,4 +1,5 @@
 'use strict';
+/* eslint-disable max-statements */
 
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
@@ -33,8 +34,8 @@ describe('E-mail service', function() {
       expect(emailService.send(messageOptions)).to.eventually.be.rejected.and.notify(done);
     });
 
-    it('Should return an error if no primary destination is present', function(done) {
-      delete messageOptions.to;
+    it('Should return an error if sender address is not a string or array of strings', function(done) {
+      messageOptions.from = {'email':'test@domain.com'};
 
       expect(emailService.send(messageOptions)).to.eventually.be.rejected.and.notify(done);
     });
@@ -45,8 +46,20 @@ describe('E-mail service', function() {
       expect(emailService.send(messageOptions)).to.eventually.be.rejected.and.notify(done);
     });
 
+    it('Should return an error if no primary destination is present', function(done) {
+      delete messageOptions.to;
+
+      expect(emailService.send(messageOptions)).to.eventually.be.rejected.and.notify(done);
+    });
+
     it('Should return an error if primary destination is not a valid e-mail address', function(done) {
       messageOptions.to = 'someone-at-domain.com';
+
+      expect(emailService.send(messageOptions)).to.eventually.be.rejected.and.notify(done);
+    });
+
+    it('Should return an error if primary destination address is not a string or array of strings', function(done) {
+      messageOptions.to = {'email':'test@domain.com'};
 
       expect(emailService.send(messageOptions)).to.eventually.be.rejected.and.notify(done);
     });
@@ -69,6 +82,12 @@ describe('E-mail service', function() {
       expect(emailService.send(messageOptions)).to.eventually.be.rejected.and.notify(done);
     });
 
+    it('Should return an error if CC destination address is not a string or array of strings', function(done) {
+      messageOptions.cc = {'email':'test@domain.com'};
+
+      expect(emailService.send(messageOptions)).to.eventually.be.rejected.and.notify(done);
+    });
+
     it('Should NOT return an error if CC destination is a valid e-mail addresses', function(done) {
       messageOptions.cc = 'address1@domain.com';
 
@@ -83,6 +102,36 @@ describe('E-mail service', function() {
 
     it('Should NOT return an error if CC destination is an array of valid e-mail addresses', function(done) {
       messageOptions.cc = ['address1@domain.com', 'address2@domain.com'];
+
+      expect(emailService.send(messageOptions)).to.eventually.be.fulfilled.and.notify(done);
+    });
+
+    it('Should return an error if BCC destination is an invalid e-mail addresses', function(done) {
+      messageOptions.bcc = 'address1-at-domain.com';
+
+      expect(emailService.send(messageOptions)).to.eventually.be.rejected.and.notify(done);
+    });
+
+    it('Should return an error if BCC destination address is not a string or array of strings', function(done) {
+      messageOptions.bcc = {'email':'test@domain.com'};
+
+      expect(emailService.send(messageOptions)).to.eventually.be.rejected.and.notify(done);
+    });
+
+    it('Should NOT return an error if BCC destination is a valid e-mail addresses', function(done) {
+      messageOptions.bcc = 'address1@domain.com';
+
+      expect(emailService.send(messageOptions)).to.eventually.be.fulfilled.and.notify(done);
+    });
+
+    it('Should return an error if BCC destination is an array that contains invalid e-mail addresses', function(done) {
+      messageOptions.bcc = ['address1@domain.com', 'address2-at-domain.com'];
+
+      expect(emailService.send(messageOptions)).to.eventually.be.rejected.and.notify(done);
+    });
+
+    it('Should NOT return an error if BCC destination is an array of valid e-mail addresses', function(done) {
+      messageOptions.bcc = ['address1@domain.com', 'address2@domain.com'];
 
       expect(emailService.send(messageOptions)).to.eventually.be.fulfilled.and.notify(done);
     });
