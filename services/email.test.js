@@ -23,6 +23,10 @@ describe('E-mail service', function() {
       };
     });
 
+    it('Should return an error if parameters are not specified', function(done) {
+      expect(emailService.send()).to.eventually.be.rejected.and.notify(done);
+    });
+
     it('Should NOT return an error if all required parameters are specified and valid', function(done) {
       expect(emailService.send(messageOptions)).to.eventually.be.fulfilled.and.notify(done);
     });
@@ -138,6 +142,26 @@ describe('E-mail service', function() {
 
       it('Should NOT return an error if BCC destination is an array of valid e-mail addresses', function(done) {
         messageOptions.bcc = ['address1@domain.com', 'address2@domain.com'];
+
+        expect(emailService.send(messageOptions)).to.eventually.be.fulfilled.and.notify(done);
+      });
+    });
+
+    describe('Subject:', function() {
+      it('Should return an error if subject is not present', function(done) {
+        delete messageOptions.subject;
+
+        expect(emailService.send(messageOptions)).to.eventually.be.rejected.and.notify(done);
+      });
+
+      it('Should return an error if subject is not a string', function(done) {
+        messageOptions.subject = ['Some subject'];
+
+        expect(emailService.send(messageOptions)).to.eventually.be.rejected.and.notify(done);
+      });
+
+      it('Should NOT return an error if subject is empty', function(done) {
+        messageOptions.subject = '';
 
         expect(emailService.send(messageOptions)).to.eventually.be.fulfilled.and.notify(done);
       });

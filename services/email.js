@@ -24,6 +24,8 @@ module.exports = function EmailService() {
       if (params.cc && !params.cc.every(validateEmailAddress)) return reject(new Error('CC must be a valid e-mail address'));
       if (params.bcc && !params.bcc.every(validateEmailAddress)) return reject(new Error('BCC must be a valid e-mail address'));
 
+      if (typeof params.subject !== 'string') return reject(new Error('Subject must be present, even if empty'));
+
       resolve();
     });
   }
