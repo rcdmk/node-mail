@@ -23,7 +23,7 @@ describe('E-mail service', function() {
       };
     });
 
-    it('Should return an error if no sender is present', function(done) {
+    it('Should return an error if no sender address is present', function(done) {
       delete messageOptions.from;
 
       expect(emailService.send(messageOptions)).to.eventually.be.rejected.and.notify(done);
@@ -35,7 +35,19 @@ describe('E-mail service', function() {
       expect(emailService.send(messageOptions)).to.eventually.be.rejected.and.notify(done);
     });
 
-    it('Should NOT return an error if all required parameter are specified', function(done) {
+    it('Should return an error if sender address is not a valid e-mail address', function(done) {
+      messageOptions.from = 'someone-at-domain.com';
+
+      expect(emailService.send(messageOptions)).to.eventually.be.rejected.and.notify(done);
+    });
+
+    it('Should return an error if primary destination is not a valid e-mail address', function(done) {
+      messageOptions.to = 'someone-at-domain.com';
+
+      expect(emailService.send(messageOptions)).to.eventually.be.rejected.and.notify(done);
+    });
+
+    it('Should NOT return an error if all required parameters are specified and valid', function(done) {
       expect(emailService.send(messageOptions)).to.eventually.be.fulfilled.and.notify(done);
     });
   });
