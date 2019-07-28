@@ -14,7 +14,9 @@ module.exports = function EmailService(options) {
       return new Promise((resolve, reject) => {
         if (!params) return reject(new Error('Params object missing'));
 
-        if (!validateEmailAddress(params.to)) return reject(new Error('To must be a valid e-mail address'));
+        if (typeof params.to === 'string') params.to = [params.to];
+
+        if (!params.to.every(validateEmailAddress)) return reject(new Error('To must be a valid e-mail address'));
         if (!validateEmailAddress(params.from)) return reject(new Error('From must be a valid e-mail address'));
 
         resolve();

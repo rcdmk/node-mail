@@ -47,6 +47,18 @@ describe('E-mail service', function() {
       expect(emailService.send(messageOptions)).to.eventually.be.rejected.and.notify(done);
     });
 
+    it('Should return an error if primary destination is an array that contains invalid e-mail addresses', function(done) {
+      messageOptions.to = ['address1@domain.com', 'address2-at-domain.com'];
+
+      expect(emailService.send(messageOptions)).to.eventually.be.rejected.and.notify(done);
+    });
+
+    it('Should NOT return an error if primary destination is an array of valid e-mail addresses', function(done) {
+      messageOptions.to = ['address1@domain.com', 'address2@domain.com'];
+
+      expect(emailService.send(messageOptions)).to.eventually.be.fulfilled.and.notify(done);
+    });
+
     it('Should NOT return an error if all required parameters are specified and valid', function(done) {
       expect(emailService.send(messageOptions)).to.eventually.be.fulfilled.and.notify(done);
     });
