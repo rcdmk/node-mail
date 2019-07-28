@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * Handles the root index route
  * @param  {object} req HTTP request object

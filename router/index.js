@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * Router registers controllers for each route
  * @param  {object} app Express app
