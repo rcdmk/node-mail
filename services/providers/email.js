@@ -24,8 +24,7 @@ class EmailProvider {
    */
   send(params) {
     return this.request(params)
-      .then(() => null)
-      .catch((err) => new InternalError(err));
+      .catch((err) => new InternalError(err.error));
   }
 }
 
