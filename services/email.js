@@ -34,6 +34,7 @@ class EmailService{
    * validation error
    */
   validateAndFormatSendParams(params) {
+    // eslint-disable-next-line max-statements
     return new Promise((resolve, reject) => {
       if (!params) return reject(new ValidationError('', 'Params object missing'));
 
@@ -84,7 +85,7 @@ class EmailService{
       return Promise.reject(new InternalError('Invalid provider index'));
     }
 
-    let provider = this.options.providers[currentProvider]; // eslint-disable-line security/detect-object-injection
+    let provider = this.options.providers[+currentProvider]; // the + sign avoids object injection vulnerability
 
     if (!provider || typeof provider.send !== 'function') {
       return Promise.reject(new InternalError('Invalid provider instance'));
