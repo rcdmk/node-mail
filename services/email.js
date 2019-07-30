@@ -30,7 +30,6 @@ function EmailService(options) {
    * validation error
    */
   function validateAndFormatSendParams(params) {
-    // eslint-disable-next-line max-statements
     return new Promise((resolve, reject) => {
       if (!params) return reject(new ValidationError('', 'Params object missing'));
 
@@ -48,10 +47,6 @@ function EmailService(options) {
         return reject(new ValidationError('to', 'To must be a valid e-mail address'));
       }
 
-      if (!validateEmailAddress(params.from)) {
-        return reject(new ValidationError('from', 'From must be a valid e-mail address'));
-      }
-
       if (params.cc && !params.cc.every(validateEmailAddress)) {
         return reject(new ValidationError('cc', 'CC must be a valid e-mail address'));
       }
@@ -67,10 +62,11 @@ function EmailService(options) {
       resolve(params);
     });
   }
+
   /**
    * Sends an e-mail message according to the provided params. It will fallback for other providers in case one fails.
-   * @param   {object}  params A set of message poperties, like from, to, cc, bcc, subect and text
-   * @param   {number}  currentProvider The index of the provider to be used
+   * @param   {object}  params A set of message poperties, like to, cc, bcc, subject and text
+   * @param   {number}  [currentProvider = 0] The index of the provider to be used
    * @returns {Promise} A promise that resolves when success or rejects in case of error in all providers
    */
   function send(params, currentProvider = 0) {

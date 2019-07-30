@@ -4,7 +4,7 @@ const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
 
 const emailServiceModule = require('./email');
-const TestEmailProvider = require('./providers').email.test;
+const TestEmailProvider = require('./providers').email.Test;
 const {InternalError, ValidationError} = require('../infra/errors');
 
 chai.use(chaiAsPromised);
@@ -42,26 +42,6 @@ describe('E-mail service', function() {
 
       it('Should NOT return an error if all required parameters are specified and valid', function(done) {
         expect(emailService.send(messageOptions)).to.eventually.be.fulfilled.and.notify(done);
-      });
-
-      describe('FROM:', function() {
-        it('Should return an error if no sender address is present', function(done) {
-          delete messageOptions.from;
-
-          expect(emailService.send(messageOptions)).to.eventually.be.rejectedWith(ValidationError).and.notify(done);
-        });
-
-        it('Should return an error if sender address is not a string or array of strings', function(done) {
-          messageOptions.from = {'email':'test@domain.com'};
-
-          expect(emailService.send(messageOptions)).to.eventually.be.rejectedWith(ValidationError).and.notify(done);
-        });
-
-        it('Should return an error if sender address is not a valid e-mail address', function(done) {
-          messageOptions.from = 'someone-at-domain.com';
-
-          expect(emailService.send(messageOptions)).to.eventually.be.rejectedWith(ValidationError).and.notify(done);
-        });
       });
 
       describe('TO:', function() {
