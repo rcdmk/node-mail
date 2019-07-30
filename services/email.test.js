@@ -2,7 +2,9 @@
 
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
+
 const emailServiceModule = require('./email');
+const emailProvider = require('./providers').email.test;
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -10,7 +12,9 @@ const expect = chai.expect;
 describe('E-mail service', function() {
   describe('#send()', function() {
     let emailService;
-    const emailServiceOptions = {};
+    const emailServiceOptions = {
+      providers: [emailProvider]
+    };
     let messageOptions;
 
     beforeEach(function() {
