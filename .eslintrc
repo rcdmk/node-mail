@@ -4,6 +4,23 @@
     "mocha": true,
     "es6": true
   },
+  "plugins": [
+    "node",
+    "security",
+    "mocha"
+  ],
+  "extends": [
+    "eslint:recommended",
+    "plugin:node/recommended",
+    "plugin:security/recommended",
+    "plugin:mocha/recommended"
+  ],
+  "overrides": [{
+    "files": "**/*.test.js",
+    "rules": {
+      "node/no-unpublished-require": 0
+    }
+  }],
   "rules": {
     "array-bracket-spacing": [2, "never"],
     "block-scoped-var": 2,
