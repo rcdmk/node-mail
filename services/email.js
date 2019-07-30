@@ -87,7 +87,7 @@ function EmailService(options) {
     }
 
     return validateAndFormatSendParams(params)
-      .then(provider.send)
+      .then((p) => provider.send(p))
       .catch((err) => {
         // recursivelly call next provider in the list
         if (currentProvider < providerCount - 1) {
