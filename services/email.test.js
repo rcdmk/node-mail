@@ -4,7 +4,7 @@ const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
 
 const emailServiceModule = require('./email');
-const emailProvider = require('./providers').email.test;
+const TestEmailProvider = require('./providers').email.test;
 const {InternalError, ValidationError} = require('../infra/errors');
 
 chai.use(chaiAsPromised);
@@ -14,9 +14,15 @@ describe('E-mail service', function() {
   describe('#send()', function() {
     let emailService, emailServiceOptions, messageOptions;
 
+    const successfulEmailProvider = new TestEmailProvider({success: true});
+    const failedEmailProvider = new TestEmailProvider({
+      success: false,
+      error: new InternalError('Some service error')
+    });
+
     beforeEach(function() {
       emailServiceOptions = {
-        providers: [emailProvider]
+        providers: [successfulEmailProvider]
       };
 
       emailService = emailServiceModule(emailServiceOptions);
@@ -25,9 +31,7 @@ describe('E-mail service', function() {
         from: 'me@domain.com',
         to: 'destination@another.com',
         subject: 'Test e-mail',
-        body: 'Just testing',
-
-        success: true // required by test provider
+        body: 'Just testing'
       };
     });
 
@@ -178,38 +182,29 @@ describe('E-mail service', function() {
     });
 
     describe('Providers:', function() {
+      it('Should NOT return an error with single provider if provider returns success', function(done) {
+        emailServiceOptions.providers = [successfulEmailProvider];
+        emailService = emailServiceModule(emailServiceOptions);
+
+        expect(emailService.send(messageOptions)).to.eventually.be.fulfilled.and.notify(done);
+      });
+
       it('Should return an error with a single provider if provider returns an error', function(done) {
-        messageOptions.success = false;
-        messageOptions.error = new InternalError('Some service error');
+        emailServiceOptions.providers = [failedEmailProvider];
+        emailService = emailServiceModule(emailServiceOptions);
 
         expect(emailService.send(messageOptions)).to.eventually.be.rejectedWith(InternalError).and.notify(done);
       });
 
-      it('Should NOT return an error with single provider if provider returns success', function(done) {
-        expect(emailService.send(messageOptions)).to.eventually.be.fulfilled.and.notify(done);
-      });
-
       it('Should return an error with multiple providers if all providers return error', function(done) {
-        emailServiceOptions.providers = [emailProvider, emailProvider];
-
+        emailServiceOptions.providers = [failedEmailProvider, failedEmailProvider];
         emailService = emailServiceModule(emailServiceOptions);
-
-        // causes emailProvider to fail
-        messageOptions.success = false;
-        messageOptions.error = new InternalError('Some service error');
 
         expect(emailService.send(messageOptions)).to.eventually.be.rejectedWith(InternalError).and.notify(done);
       });
 
       it('Should NOT return an error with multiple providers if one provider returns success', function(done) {
-        const failedProvider = {
-          send: function() {
-            return Promise.reject(new InternalError('Some service error'));
-          }
-        };
-
-        emailServiceOptions.providers = [failedProvider, emailProvider];
-
+        emailServiceOptions.providers = [failedEmailProvider, successfulEmailProvider];
         emailService = emailServiceModule(emailServiceOptions);
 
         expect(emailService.send(messageOptions)).to.eventually.be.fulfilled.and.notify(done);
