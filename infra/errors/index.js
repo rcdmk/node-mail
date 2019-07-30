@@ -20,7 +20,7 @@ class ResourceNotFoundError extends DomainError {
 
 class InternalError extends DomainError {
   constructor(error) {
-    super(error.message);
+    super(error && error.message ? error.message : error);
     this.data = {
       error
     };
