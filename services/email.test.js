@@ -3,7 +3,7 @@
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
 
-const emailServiceModule = require('./email');
+const EmailService = require('./email');
 const TestEmailProvider = require('./providers').email.Test;
 const {InternalError, ValidationError} = require('../infra/errors');
 
@@ -25,7 +25,7 @@ describe('E-mail service', function() {
         providers: [successfulEmailProvider]
       };
 
-      emailService = emailServiceModule(emailServiceOptions);
+      emailService = new EmailService(emailServiceOptions);
 
       messageOptions = {
         from: 'me@domain.com',
@@ -164,28 +164,28 @@ describe('E-mail service', function() {
     describe('Providers:', function() {
       it('Should NOT return an error with single provider if provider returns success', function(done) {
         emailServiceOptions.providers = [successfulEmailProvider];
-        emailService = emailServiceModule(emailServiceOptions);
+        emailService = new EmailService(emailServiceOptions);
 
         expect(emailService.send(messageOptions)).to.eventually.be.fulfilled.and.notify(done);
       });
 
       it('Should return an error with a single provider if provider returns an error', function(done) {
         emailServiceOptions.providers = [failedEmailProvider];
-        emailService = emailServiceModule(emailServiceOptions);
+        emailService = new EmailService(emailServiceOptions);
 
         expect(emailService.send(messageOptions)).to.eventually.be.rejectedWith(InternalError).and.notify(done);
       });
 
       it('Should return an error with multiple providers if all providers return error', function(done) {
         emailServiceOptions.providers = [failedEmailProvider, failedEmailProvider];
-        emailService = emailServiceModule(emailServiceOptions);
+        emailService = new EmailService(emailServiceOptions);
 
         expect(emailService.send(messageOptions)).to.eventually.be.rejectedWith(InternalError).and.notify(done);
       });
 
       it('Should NOT return an error with multiple providers if one provider returns success', function(done) {
         emailServiceOptions.providers = [failedEmailProvider, successfulEmailProvider];
-        emailService = emailServiceModule(emailServiceOptions);
+        emailService = new EmailService(emailServiceOptions);
 
         expect(emailService.send(messageOptions)).to.eventually.be.fulfilled.and.notify(done);
       });
