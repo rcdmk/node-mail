@@ -59,8 +59,12 @@ class EmailService{
         return reject(new ValidationError('bcc', 'BCC must be a valid e-mail address'));
       }
 
-      if (typeof params.subject !== 'string') {
-        return reject(new ValidationError('subject', 'Subject must be present, even if empty'));
+      if (!params.subject || typeof params.subject !== 'string') {
+        return reject(new ValidationError('subject', 'Subject must be provided'));
+      }
+
+      if (!params.text || typeof params.text !== 'string') {
+        return reject(new ValidationError('text', 'Text must be provided'));
       }
 
       resolve(params);
