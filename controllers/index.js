@@ -49,8 +49,8 @@ function errorResponse(res) {
       delete result.stack;
     }
 
-    res.status(statusCode)
-      .send(result);
+    return res.status(statusCode)
+              .send(result);
   };
 }
 
@@ -83,10 +83,10 @@ function handleSendMessage(req, res) {
     text: req.body.text
   };
 
-  emailService.validateAndFormatSendParams(params)
-    .then((params) => emailService.send(params))
-    .then(successResponse(res))
-    .catch(errorResponse(res));
+  return emailService.validateAndFormatSendParams(params)
+                      .then((params) => emailService.send(params))
+                      .then(successResponse(res))
+                      .catch(errorResponse(res));
 }
 
 module.exports = {
