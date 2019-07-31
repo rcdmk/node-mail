@@ -1,0 +1,8 @@
+.git
+Dockerfile
+node_modules
+.DS_Store
+.gitignore
+README.md
+npm-debug.log
+yarn-error.log
