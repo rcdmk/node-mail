@@ -38,7 +38,7 @@ const controllers = new APIController(emailService);
 
 new Router(app).register(controllers);
 
-const server = app.listen(config.server.port, () => {
+const server = app.listen(process.env.PORT || config.server.port, () => {
   const serverAddress = server.address();
 
   console.log(`Server listening at http://${serverAddress.address}:${serverAddress.port}`);
