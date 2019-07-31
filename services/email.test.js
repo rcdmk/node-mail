@@ -27,7 +27,6 @@ describe('E-mail service', function() {
     emailService = new EmailService(emailServiceOptions);
 
     messageOptions = {
-      from: 'me@domain.com',
       to: 'destination@another.com',
       subject: 'Test e-mail',
       text: 'Just testing'
@@ -40,9 +39,17 @@ describe('E-mail service', function() {
 				.to.eventually.be.rejectedWith(ValidationError).and.notify(done);
     });
 
-    it('Should NOT return an error if all required parameters are specified and valid', function(done) {
+    it('Should return parameters with expected format', function(done) {
+      const expectedParams = {
+        to: ['destination@another.com'],
+        cc: [],
+        bcc: [],
+        subject: 'Test e-mail',
+        text: 'Just testing'
+      };
+
       expect(emailService.validateAndFormatSendParams(messageOptions))
-				.to.eventually.be.fulfilled.and.notify(done);
+				.to.eventually.be.fulfilled.and.become(expectedParams).and.notify(done);
     });
 
     describe('TO:', function() {
