@@ -1,4 +1,5 @@
 'use strict';
+const {Router:expressRouter} = require('express');
 
 /**
  * Router registers controllers for each route
@@ -14,8 +15,13 @@ class Router {
    * @param  {object} controllers The controllers module instance with handler properties
    */
   register(controllers) {
-    this.app.get('/', controllers.index);
-    this.app.post('/messages', controllers.sendMessage);
+    this.app.get('/', (req, res) => controllers.handleIndex(req, res));
+
+    const versionGroup = expressRouter('/v1');
+
+    versionGroup.post('/messages', (req, res) => controllers.handleSendMessage(req, res));
+
+    this.app.use(versionGroup);
 
     // Not found
     this.app.use((req, res, next) => {

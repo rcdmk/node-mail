@@ -1,95 +1,85 @@
 'use strict';
-const request = require('request-promise-native');
-
 const errors = require('../infra/errors');
-const EmailService = require('../services/email');
-const {Mailgun, SendGrid} = require('../services/providers').email;
 
-const mailgunOptions = {
-  apiKey: '***REMOVED***',
-  domain: 'sandbox220841877a8c45dda263ff7e5abd1f6c.mailgun.org',
-  sender: 'postmaster@sandbox220841877a8c45dda263ff7e5abd1f6c.mailgun.org'
-};
+class APIController {
+  constructor(emailService) {
+    this.emailService = emailService;
+  }
 
-const sendGridOptions = {
-  apiKey: '***REMOVED***',
-  sender: 'test@sendgrid.com'
-};
+  /**
+   * Returns an error response handler for a request
+   *
+   * @param {object} res An Express response object
+   * @returns An error response handler
+   */
+  errorResponse(res) {
+    return function errorResult(err) {
+      let result = {
+        name: err.name,
+        field: err.field,
+        message: err.message,
+        stack: err.stack
+      };
 
-const emailOptions = {
-  providers: [
-    new Mailgun(request, mailgunOptions),
-    new SendGrid(request, sendGridOptions),
-  ]
-};
+      let statusCode = 503;
 
-const emailService = new EmailService(emailOptions);
+      if (err instanceof errors.ValidationError) statusCode = 422;
+      if (err instanceof errors.ResourceNotFoundError) statusCode = 404;
 
-/**
- * Returns an error response handler for a request
- *
- * @param {object} res An Express response object
- * @returns An error response handler
- */
-function errorResponse(res) {
-  return function errorResult(err) {
-    let result = {
-      name: err.name,
-      field: err.field,
-      message: err.message,
-      stack: err.stack
+      if (process.env['NODE_ENV'] === 'production') {
+        delete result.stack;
+      }
+
+      return res.status(statusCode)
+                .send(result);
+    };
+  }
+
+  /**
+   * Returns a success response handler for JSON format
+   * @param {object} res Express response object
+   * @memberof APIController
+   */
+  successResponse(res) {
+    return function successResult(data) {
+      if (data) {
+        return res.status(200).json(data);
+      }
+
+      return res.status(204).end();
+    };
+  }
+
+  /**
+   * Handles the root index route
+   * @param {object} req Express request object
+   * @param {object} res Express response object
+   * @memberof APIController
+   */
+  handleIndex(req, res) {
+    return res.send('API server v1.0.0');
+  }
+
+  /**
+   * Handles sending e-mail messages
+   * @param {object} req Express request object
+   * @param {object} res Express response object
+   * @memberof APIController
+   */
+  handleSendMessage(req, res) {
+    const params = {
+      to: req.body.to,
+      cc: req.body.cc,
+      bcc: req.body.bcc,
+      subject: req.body.subject,
+      text: req.body.text
     };
 
-    let statusCode = 503;
-
-    if (err instanceof errors.ValidationError) statusCode = 422;
-    if (err instanceof errors.ResourceNotFoundError) statusCode = 404;
-
-    if (process.env['NODE_ENV'] === 'production') {
-      delete result.stack;
-    }
-
-    return res.status(statusCode)
-              .send(result);
-  };
+    return this.emailService.validateAndFormatSendParams(params)
+                            .then((params) => this.emailService.send(params))
+                            .then((data) => this.successResponse(res)(data))
+                            .catch((err) => this.errorResponse(res)(err));
+  }
 }
 
-function successResponse(res) {
-  return function successResult(data) {
-    if (data) {
-      return res.status(200).json(data);
-    }
-
-    return res.status(204).end();
-  };
-}
-
-/**
- * Handles the root index route
- */
-function handleIndex(req, res) {
-  res.send('API server v1.0.0');
-}
-
-/**
- * Handles sending e-mail messages
- */
-function handleSendMessage(req, res) {
-  const params = {
-    to: req.body.to,
-    cc: req.body.cc,
-    bcc: req.body.bcc,
-    subject: req.body.subject,
-    text: req.body.text
-  };
-
-  return emailService.validateAndFormatSendParams(params)
-                      .then((params) => emailService.send(params))
-                      .then(successResponse(res))
-                      .catch(errorResponse(res));
-}
-
-module.exports = {
-  index: handleIndex,
-  sendMessage: handleSendMessage,
-};
+module.exports = APIController;
