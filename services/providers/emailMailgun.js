@@ -1,6 +1,6 @@
 'use strict';
 const EmailProvider = require('./email');
-
+const {InternalError} = require('../../infra/errors');
 
 /**
  * Mailgun e-mail provider sends e-mails through Mailgun service
@@ -16,6 +16,7 @@ class MailgunProvider extends EmailProvider {
    */
   constructor(request, options) {
     super(request);
+    this.name = 'Mailgun';
     this.options = options;
   }
 
@@ -29,8 +30,9 @@ class MailgunProvider extends EmailProvider {
     const opts = {
       method: 'POST',
       uri: `https://api.mailgun.net/v3/${this.options.domain}/messages`,
+      simple: true,
       auth: {
-        user: this.options.user,
+        user: 'api',
         pass: this.options.apiKey
       },
       form: {
@@ -45,8 +47,14 @@ class MailgunProvider extends EmailProvider {
     };
 
     return super.send(opts)
+      .catch((err) => {
+        if (err.data && err.data.error) throw new InternalError(err.data.error);
+
+        throw err;
+      })
       .then((data) => {
         return {
+          provider: this.name,
           messageId: data.id
         };
       });
