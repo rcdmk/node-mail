@@ -8,3 +8,30 @@ This is a simple application that lets the user send e-mails through 3rd-party s
 - NPM 6.9+ or Yarn 1.17+
 
 Other dependencies are listed in `package.json` file and can be downloaded with **NPM** or **Yarn**.
+
+## Tests
+
+This project has a test suite that covers the main logic and can be executed with:
+
+```sh
+yarn test
+# or
+npm test
+```
+
+## Running
+
+To run this application, execute the following:
+
+```sh
+yarn start
+# or
+npm start
+```
+
+## TODO
+
+[ ] Add configuration modules
+[ ] Add Dockerfile
+[ ] Add tests for providers
+[ ] Add tests for routes
