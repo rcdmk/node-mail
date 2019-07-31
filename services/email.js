@@ -56,11 +56,11 @@ class EmailService{
       }
 
       if (!params.subject || typeof params.subject !== 'string') {
-        return reject(new ValidationError('subject', 'Subject must be provided'));
+        return reject(new ValidationError('subject', 'Subject must be provided as text'));
       }
 
       if (!params.text || typeof params.text !== 'string') {
-        return reject(new ValidationError('text', 'Text must be provided'));
+        return reject(new ValidationError('text', 'Text must be provided as text'));
       }
 
       resolve(params);
