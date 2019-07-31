@@ -29,6 +29,16 @@ yarn start
 npm start
 ```
 
+To run this on Docker, execute the following:
+
+```sh
+# build docker image (first time only)
+docker build -t node-mail:latest .
+
+# run container
+docker run -p 3000:3000 node-mail:latest
+```
+
 ## Configuration
 
 Configuration is stored in the config.json file, inside config module.
@@ -92,6 +102,6 @@ This route enables sending e-mail messages through one of the available provider
 - [X] Add route documentation
 - [X] Add configuration modules
 - [ ] Add validation middleware to controllers
-- [ ] Add Dockerfile
+- [X] Add Dockerfile
 - [ ] Add tests for providers
 - [ ] Add tests for routes
