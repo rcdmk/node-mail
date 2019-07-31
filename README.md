@@ -32,6 +32,7 @@ npm start
 ## TODO
 
 - [ ] Add configuration modules
+- [ ] Add validation middleware to controllers
 - [ ] Add Dockerfile
 - [ ] Add tests for providers
 - [ ] Add tests for routes
