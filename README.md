@@ -31,7 +31,7 @@ npm start
 
 ## TODO
 
-[ ] Add configuration modules
-[ ] Add Dockerfile
-[ ] Add tests for providers
-[ ] Add tests for routes
+- [ ] Add configuration modules
+- [ ] Add Dockerfile
+- [ ] Add tests for providers
+- [ ] Add tests for routes
