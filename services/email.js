@@ -39,9 +39,9 @@ class EmailService{
 
       params.to = params.to && !Array.isArray(params.to) ? [params.to] : params.to || [];
 
-      params.cc = params.cc && !Array.isArray(params.cc) ? [params.cc] : params.cc || [];
+      params.cc = params.cc && !Array.isArray(params.cc) ? [params.cc] : params.cc;
 
-      params.bcc = params.bcc && !Array.isArray(params.bcc) ? [params.bcc] : params.bcc || [];
+      params.bcc = params.bcc && !Array.isArray(params.bcc) ? [params.bcc] : params.bcc;
 
       if (params.to.length === 0 || !params.to.every(this.validateEmailAddress)) {
         return reject(new ValidationError('to', 'To must be a valid e-mail address'));

@@ -42,8 +42,6 @@ describe('E-mail service', function() {
     it('Should return parameters with expected format', function(done) {
       const expectedParams = {
         to: ['destination@another.com'],
-        cc: [],
-        bcc: [],
         subject: 'Test e-mail',
         text: 'Just testing'
       };
