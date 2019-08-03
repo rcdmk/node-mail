@@ -8,6 +8,7 @@ const logger = winston.createLogger({
       handleExceptions: true,
       json: true,
       colorize: true,
+      silent: process.argv.includes('--silent') || process.env.NODE_ENV === 'testing'
     })
   ],
   exitOnError: false

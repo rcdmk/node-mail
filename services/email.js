@@ -35,14 +35,15 @@ class EmailService{
    * validation error
    */
   validateAndFormatSendParams(params) {
+    // eslint-disable-next-line max-statements
     return new Promise((resolve, reject) => {
       if (!params) return reject(new ValidationError('', 'Params object missing'));
 
       params.to = params.to && !Array.isArray(params.to) ? [params.to] : params.to || [];
 
-      params.cc = params.cc && !Array.isArray(params.cc) ? [params.cc] : params.cc;
+      params.cc = params.cc && !Array.isArray(params.cc) ? [params.cc] : params.cc || [];
 
-      params.bcc = params.bcc && !Array.isArray(params.bcc) ? [params.bcc] : params.bcc;
+      params.bcc = params.bcc && !Array.isArray(params.bcc) ? [params.bcc] : params.bcc || [];
 
       if (params.to.length === 0 || !params.to.every(this.validateEmailAddress)) {
         return reject(new ValidationError('to', 'To must be a valid e-mail address'));
@@ -63,6 +64,11 @@ class EmailService{
       if (!params.text || typeof params.text !== 'string') {
         return reject(new ValidationError('text', 'Text must be provided as text'));
       }
+
+      // remove empty params
+      Object.entries(params).forEach((entry) => {
+        if (!entry[1] || entry[1].length === 0) delete params[entry[0]];
+      });
 
       resolve(params);
     });
