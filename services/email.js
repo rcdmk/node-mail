@@ -89,6 +89,7 @@ class EmailService{
     return this.validateAndFormatSendParams(params)
       .then((p) => provider.send(p))
       .catch((err) => {
+        console.log(provider.name, 'error:', err);
         // recursivelly call next provider in the list
         if (currentProvider < providerCount - 1) {
           return this.send(params, currentProvider + 1);
