@@ -1,4 +1,5 @@
 'use strict';
+const logger = require('../infra/logger');
 const {InternalError,ValidationError} = require('../infra/errors');
 
 const validEmailRegExp = /^[a-zA-Z0-9][a-zA-Z0-9._-]*?[a-zA-Z0-9]@[a-zA-Z0-9][a-zA-Z0-9.-]*?\.[a-zA-Z]{2,}$/;
@@ -89,7 +90,8 @@ class EmailService{
     return this.validateAndFormatSendParams(params)
       .then((p) => provider.send(p))
       .catch((err) => {
-        console.log(provider.name, 'error:', err);
+        logger.error(provider.name + ' error: ', err);
+
         // recursivelly call next provider in the list
         if (currentProvider < providerCount - 1) {
           return this.send(params, currentProvider + 1);
