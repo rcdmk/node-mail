@@ -2,7 +2,6 @@
 
 const express = require('express');
 const bodyParser = require('body-parser');
-const morgan = require('morgan');
 const cors = require('cors');
 const helmet = require('helmet');
 const request = require('request-promise-native');
@@ -23,7 +22,7 @@ app.use(cors());
 app.use(helmet());
 
 // utility middleware
-app.use(morgan('combined', {stream: logger.stream}));
+app.use(logger.middleware);
 app.use(bodyParser.json());
 
 // graceful shutdown
