@@ -8,6 +8,6 @@ const sendGridApiKey = process.env['SENDGRID_API_KEY'];
 
 if (serverPort) config.server.port = parseInt(serverPort, 10);
 if (mailgunApiKey) config.providers.email.mailgun.apiKey = mailgunApiKey;
-if (sendGridApiKey) config.providers.email.sendgrid.apiKey = mailgunApiKey;
+if (sendGridApiKey) config.providers.email.sendgrid.apiKey = sendGridApiKey;
 
 module.exports = config;
