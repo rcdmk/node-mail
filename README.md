@@ -63,19 +63,21 @@ docker run -p 3000:3000 node-mail:latest
 
 Configuration is stored in the config.json file, inside config module and some of its values can be overridden by environment variables:
 
-|       # | Parameter | Type    | Description                                          | Env Var Override |
-| ------: | :-------- | :------ | :--------------------------------------------------- | :--------------- |
-|       1 | server    | object  | Server config section                                |                  |
-|     1.1 | port      | integer | Server port to listen to                             | PORT             |
-|       2 | providers | object  | Providers config section                             |                  |
-|     2.1 | email     | object  | E-mail providers config                              |                  |
-|   2.1.1 | mailgun   | object  | Mailgun e-mail provider config                       |                  |
-| 2.1.1.1 | apiKey    | string  | Mailgun API key                                      | MAILGUN_API_KEY  |
-| 2.1.1.2 | domain    | string  | Domain configured in Mailgun                         |                  |
-| 2.1.1.3 | sender    | string  | Sender address for Mailgun (must be from the domain) |                  |
-|   2.1.2 | sendgrid  | object  | SendGrid e-mail provider config                      |                  |
-| 2.1.2.1 | apiKey    | string  | SendGrid API key                                     | SENDGRID_API_KEY |
-| 2.1.2.2 | sender    | string  | Sender address for  SendGrid                         |                  |
+|       # | Parameter | Type    | Description                                      | Env Var Override |
+| ------: | :-------- | :------ | :----------------------------------------------- | :--------------- |
+|       1 | server    | object  | Server config section                            |                  |
+|     1.1 | port      | integer | Server port to listen to                         | PORT             |
+|       2 | providers | object  | Providers config section                         |                  |
+|     2.1 | email     | object  | E-mail providers config                          |                  |
+|   2.1.1 | mailgun   | object  | Mailgun e-mail provider config                   |                  |
+| 2.1.1.1 | enabled   | boolean | Flag to enable provider                          |                  |
+| 2.1.1.2 | apiKey    | string  | Mailgun API key                                  | MAILGUN_API_KEY  |
+| 2.1.1.3 | domain    | string  | Domain configured in Mailgun                     |                  |
+| 2.1.1.4 | sender    | string  | Sender address for Mailgun (must be from domain) |                  |
+|   2.1.2 | sendgrid  | object  | SendGrid e-mail provider config                  |                  |
+| 2.1.2.1 | enabled   | boolean | Flag to enable provider                          |                  |
+| 2.1.2.2 | apiKey    | string  | SendGrid API key                                 | SENDGRID_API_KEY |
+| 2.1.2.3 | sender    | string  | Sender address for  SendGrid                     |                  |
 
 > **Notice:** Besides this project may store credentials in plain text in the config file, for production use it is recommended to use environment variable overrides or a configration service, as AWS SSM parameter store, to store the application secrets.
 
@@ -137,6 +139,7 @@ This route enables sending e-mail messages through one of the available provider
 - [X] Add route documentation
 - [X] Add configuration modules
 - [X] Add app logger
+- [X] Add graceful shutdown
 - [ ] Add validation middleware to controllers
 - [X] Add Dockerfile
 - [ ] Add tests for providers
