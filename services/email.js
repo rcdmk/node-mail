@@ -1,6 +1,7 @@
 'use strict';
 const logger = require('../infra/logger');
 const {InternalError,ValidationError} = require('../infra/errors');
+const EmailProvider = require('./providers/email');
 
 const validEmailRegExp = /^[a-zA-Z0-9][a-zA-Z0-9._-]*?[a-zA-Z0-9]@[a-zA-Z0-9][a-zA-Z0-9.-]*?\.[a-zA-Z]{2,}$/;
 
@@ -95,7 +96,7 @@ class EmailService{
 
     let provider = this.options.providers[+currentProvider]; // the + sign avoids object injection vulnerability
 
-    if (!provider || typeof provider.send !== 'function') {
+    if (!provider || !(provider instanceof EmailProvider)) {
       return Promise.reject(new InternalError('Invalid provider instance'));
     }
 
