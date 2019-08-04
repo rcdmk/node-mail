@@ -1,5 +1,7 @@
 'use strict';
+const logger = require('../infra/logger');
 const {InternalError,ValidationError} = require('../infra/errors');
+const EmailProvider = require('./providers/email');
 
 const validEmailRegExp = /^[a-zA-Z0-9][a-zA-Z0-9._-]*?[a-zA-Z0-9]@[a-zA-Z0-9][a-zA-Z0-9.-]*?\.[a-zA-Z]{2,}$/;
 
@@ -11,11 +13,17 @@ const validEmailRegExp = /^[a-zA-Z0-9][a-zA-Z0-9._-]*?[a-zA-Z0-9]@[a-zA-Z0-9][a-
 class EmailService{
   constructor(options) {
     if (!options) {
-      throw new ValidationError('E-mail options are required');
+      throw new InternalError('E-mail options are required');
     }
 
-    if (!options.providers || options.providers.length === 0) {
-      throw new ValidationError('It is required to specify at least one email provider');
+    if (Array.isArray(options.providers)) {
+      options.providers = options.providers.filter((p) => p.enabled);
+    } else {
+      options.providers = [];
+    }
+
+    if (options.providers.length === 0) {
+      throw new InternalError('It is required to specify at least one email provider');
     }
 
     this.options = options;
@@ -34,6 +42,7 @@ class EmailService{
    * validation error
    */
   validateAndFormatSendParams(params) {
+    // eslint-disable-next-line max-statements
     return new Promise((resolve, reject) => {
       if (!params) return reject(new ValidationError('', 'Params object missing'));
 
@@ -63,6 +72,11 @@ class EmailService{
         return reject(new ValidationError('text', 'Text must be provided as text'));
       }
 
+      // remove empty params
+      Object.entries(params).forEach((entry) => {
+        if (!entry[1] || entry[1].length === 0) delete params[entry[0]];
+      });
+
       resolve(params);
     });
   }
@@ -82,13 +96,15 @@ class EmailService{
 
     let provider = this.options.providers[+currentProvider]; // the + sign avoids object injection vulnerability
 
-    if (!provider || typeof provider.send !== 'function') {
+    if (!provider || !(provider instanceof EmailProvider)) {
       return Promise.reject(new InternalError('Invalid provider instance'));
     }
 
     return this.validateAndFormatSendParams(params)
       .then((p) => provider.send(p))
       .catch((err) => {
+        logger.error(provider.name + ' error: ', err);
+
         // recursivelly call next provider in the list
         if (currentProvider < providerCount - 1) {
           return this.send(params, currentProvider + 1);

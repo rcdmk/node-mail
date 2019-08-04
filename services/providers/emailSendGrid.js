@@ -20,6 +20,10 @@ class SendGridProvider extends EmailProvider {
     this.options = options;
   }
 
+  get enabled() {
+    return this.options.enabled;
+  }
+
   /**
    * Sends an e-mail message according to provided parameters
    * @param {object} params Message parameters like to, cc, bcc, subject and text
@@ -27,6 +31,26 @@ class SendGridProvider extends EmailProvider {
    * @memberof SendGridProvider
    */
   send(params) {
+    if (!this.options.enabled) return Promise.reject(new InternalError('Provider not enabled'));
+
+    const recipients = {
+      to: params.to.map((email) => {
+        return {email: email};
+      }),
+    };
+
+    if (params.cc) {
+      recipients.cc = params.cc.map((email) => {
+        return {email: email};
+      });
+    }
+
+    if (params.cc) {
+        recipients.bcc = params.bcc.map((email) => {
+        return {email: email};
+      });
+    }
+
     const opts = {
       method: 'POST',
       uri: 'https://api.sendgrid.com/v3/mail/send',
@@ -36,17 +60,7 @@ class SendGridProvider extends EmailProvider {
       },
       body: {
         personalizations: [
-          {
-            to: params.to.map((email) => {
-              return {email: email};
-            }),
-            cc: params.cc.map((email) => {
-              return {email: email};
-            }),
-            bcc: params.bcc.map((email) => {
-              return {email: email};
-            }),
-          }
+          recipients
         ],
         from: {
           email: this.options.sender
