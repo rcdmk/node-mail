@@ -20,6 +20,10 @@ class MailgunProvider extends EmailProvider {
     this.options = options;
   }
 
+  get enabled() {
+    return this.options.enabled;
+  }
+
   /**
    * Sends an e-mail message according to provided parameters
    * @param {object} params Message parameters like to, cc, bcc, subject and text
@@ -27,6 +31,8 @@ class MailgunProvider extends EmailProvider {
    * @memberof MailgunProvider
    */
   send(params) {
+    if (!this.options.enabled) return Promise.reject(new InternalError('Provider not enabled'));
+
     const opts = {
       method: 'POST',
       uri: `https://api.mailgun.net/v3/${this.options.domain}/messages`,

@@ -5,11 +5,13 @@
   "providers": {
     "email" : {
       "mailgun": {
+        "enabled": true,
         "apiKey": "***REMOVED***",
         "domain": "sandbox220841877a8c45dda263ff7e5abd1f6c.mailgun.org",
         "sender": "postmaster@sandbox220841877a8c45dda263ff7e5abd1f6c.mailgun.org"
       },
       "sendgrid": {
+        "enabled": true,
         "apiKey": "***REMOVED***",
         "sender": "test@sendgrid.com"
       }

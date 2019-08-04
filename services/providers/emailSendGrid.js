@@ -20,6 +20,10 @@ class SendGridProvider extends EmailProvider {
     this.options = options;
   }
 
+  get enabled() {
+    return this.options.enabled;
+  }
+
   /**
    * Sends an e-mail message according to provided parameters
    * @param {object} params Message parameters like to, cc, bcc, subject and text
@@ -27,6 +31,8 @@ class SendGridProvider extends EmailProvider {
    * @memberof SendGridProvider
    */
   send(params) {
+    if (!this.options.enabled) return Promise.reject(new InternalError('Provider not enabled'));
+
     const recipients = {
       to: params.to.map((email) => {
         return {email: email};
