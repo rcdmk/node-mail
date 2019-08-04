@@ -11,6 +11,10 @@ class TestProvider extends EmailProvider {
     this.options = options;
   }
 
+  get enabled() {
+    return this.options.enabled === false ? false : true;
+  }
+
   send() {
     if (!this.options || !this.options.success) {
       let err = this.options && this.options.error ? this.options.error : new Error('E-mail provider error');
