@@ -3,8 +3,8 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
+const got = require("got");
 const helmet = require("helmet");
-const request = require("./infra/got/gotRequest");
 
 const config = require("./config");
 const logger = require("./infra/logger");
@@ -40,8 +40,8 @@ app.use(function middleware(req, res, next) {
 // routes
 const emailOptions = {
   providers: [
-    new Mailgun(request, config.providers.email.mailgun),
-    new SendGrid(request, config.providers.email.sendgrid),
+    new Mailgun(got, config.providers.email.mailgun),
+    new SendGrid(got, config.providers.email.sendgrid),
   ],
 };
 

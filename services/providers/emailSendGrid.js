@@ -1,6 +1,6 @@
-'use strict';
-const EmailProvider = require('./email');
-const {InternalError} = require('../../infra/errors');
+"use strict";
+const EmailProvider = require("./email");
+const { InternalError } = require("../../infra/errors");
 
 /**
  * SendGrid e-mail provider sends e-mails through SendGrid service
@@ -10,13 +10,13 @@ const {InternalError} = require('../../infra/errors');
 class SendGridProvider extends EmailProvider {
   /**
    *Creates an instance of SendGridProvider.
-   * @param {object} request An instance of request-promised module
+   * @param {object} request An instance of got module
    * @param {object} options The options map for SendGrid service, like user, pass, domain and sender
    * @memberof SendGridProvider
    */
   constructor(request, options) {
     super(request);
-    this.name = 'SendGrid';
+    this.name = "SendGrid";
     this.options = options;
   }
 
@@ -30,66 +30,57 @@ class SendGridProvider extends EmailProvider {
    * @returns
    * @memberof SendGridProvider
    */
-  send(params) {
-    if (!this.options.enabled) return Promise.reject(new InternalError('Provider not enabled'));
+  async send(params) {
+    if (!this.options.enabled)
+      return Promise.reject(new InternalError("Provider not enabled"));
 
     const recipients = {
-      to: params.to.map((email) => {
-        return {email: email};
-      }),
+      to: params.to.map((email) => ({ email })),
     };
-
     if (params.cc) {
-      recipients.cc = params.cc.map((email) => {
-        return {email: email};
-      });
+      recipients.cc = params.cc.map((email) => ({ email }));
+    }
+    if (params.bcc) {
+      recipients.bcc = params.bcc.map((email) => ({ email }));
     }
 
-    if (params.cc) {
-        recipients.bcc = params.bcc.map((email) => {
-        return {email: email};
-      });
-    }
-
-    const opts = {
-      method: 'POST',
-      uri: 'https://api.sendgrid.com/v3/mail/send',
-      simple: true,
-      auth: {
-        bearer: this.options.apiKey
-      },
-      body: {
-        personalizations: [
-          recipients
-        ],
-        from: {
-          email: this.options.sender
-        },
-        subject: params.subject,
-        content: [
-          {
-            type: 'text/plain',
-            value: params.text
-          }
-        ]
-      },
-      json: true // Automatically parses the JSON string in the response
-    };
-
-    return super.send(opts)
-    .catch((err) => {
-      if (err.data && err.data.error && err.data.error.errors) {
-        throw new InternalError(err.data.error.errors[0]);
+    try {
+      const response = await this.request.post(
+        "https://api.sendgrid.com/v3/mail/send",
+        {
+          headers: {
+            Authorization: `Bearer ${this.options.apiKey}`,
+          },
+          json: {
+            personalizations: [recipients],
+            from: { email: this.options.sender },
+            subject: params.subject,
+            content: [
+              {
+                type: "text/plain",
+                value: params.text,
+              },
+            ],
+          },
+          responseType: "json",
+          throwHttpErrors: true,
+        }
+      );
+      return {
+        provider: this.name,
+        data: response.body,
+      };
+    } catch (err) {
+      if (
+        err.response &&
+        err.response.body &&
+        err.response.body.errors &&
+        err.response.body.errors[0]
+      ) {
+        throw new InternalError(err.response.body.errors[0]);
       }
-
       throw err;
-    })
-    .then((data) => {
-        return {
-          provider: this.name,
-          data
-        };
-      });
+    }
   }
 }
 
