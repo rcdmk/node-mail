@@ -21,6 +21,7 @@
     "cors": "^2.8.5",
     "express": "^4.21.1",
     "express-winston": "^4.2.0",
+    "got": "^14.4.9",
     "helmet": "^3.23.3",
     "request": "^2.88.2",
     "request-promise-native": "^1.0.9",
